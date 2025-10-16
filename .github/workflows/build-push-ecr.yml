@@ -1,0 +1,57 @@
+name: Build and Push ECR
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "Dockerfile"
+env:
+  AWS_REGION: eu-west-3
+  ECR_REGISTRY: 065967698083.dkr.ecr.eu-west-3.amazonaws.com
+  IMAGE_BACKEND: gitops-demo-backend
+  IMAGE_FRONTEND: gitops-demo-frontend
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+      - name: Ensure repo
+        run: |
+          aws ecr describe-repositories --repository-names $IMAGE_BACKEND --region $AWS_REGION >/dev/null 2>&1 ||           aws ecr create-repository --repository-name $IMAGE_BACKEND --region $AWS_REGION
+      - name: Build
+        run: docker build -t $IMAGE_BACKEND:latest backend
+      - name: Push
+        run: |
+          docker tag $IMAGE_BACKEND:latest $ECR_REGISTRY/$IMAGE_BACKEND:latest
+          docker push $ECR_REGISTRY/$IMAGE_BACKEND:latest
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+      - name: Ensure repo
+        run: |
+          aws ecr describe-repositories --repository-names $IMAGE_FRONTEND --region $AWS_REGION >/dev/null 2>&1 ||           aws ecr create-repository --repository-name $IMAGE_FRONTEND --region $AWS_REGION
+      - name: Build
+        run: docker build -t $IMAGE_FRONTEND:latest frontend
+      - name: Push
+        run: |
+          docker tag $IMAGE_FRONTEND:latest $ECR_REGISTRY/$IMAGE_FRONTEND:latest
+          docker push $ECR_REGISTRY/$IMAGE_FRONTEND:latest

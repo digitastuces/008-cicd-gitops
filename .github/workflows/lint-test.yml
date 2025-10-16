@@ -1,0 +1,17 @@
+name: Lint and Validate
+on:
+  pull_request:
+    branches: ["main"]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: YAML lint
+        uses: ibiqlik/action-yamllint@v3
+      - name: Kubeval check
+        uses: stefanprodan/kube-tools@v1
+        with:
+          kubectl: 1.29.0
+          kubeval: 0.16.1
+          command: kubeval --strict manifests/base/*.yaml
