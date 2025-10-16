@@ -55,3 +55,10 @@ jobs:
         run: |
           docker tag $IMAGE_FRONTEND:latest $ECR_REGISTRY/$IMAGE_FRONTEND:latest
           docker push $ECR_REGISTRY/$IMAGE_FRONTEND:latest
+      - name: Scan image
+        run: trivy image --exit-code 1 --severity CRITICAL,HIGH $ECR_REGISTRY/$IMAGE_BACKEND:latest
+
+      - name: Sign image
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: cosign sign --yes $ECR_REGISTRY/$IMAGE_BACKEND:latest

@@ -1,3 +1,4 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
@@ -6,8 +7,10 @@ metadata:
 spec:
   description: Projet GitOps complet (dev → prod)
   sourceRepos:
-    - https://github.com/digitastuces/gitops-demo-manifests
+    - '*'   # ou limite-le à tes repos Git
   destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
     - namespace: dev
       server: https://kubernetes.default.svc
     - namespace: staging
