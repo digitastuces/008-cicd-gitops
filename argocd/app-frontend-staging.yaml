@@ -6,9 +6,9 @@ metadata:
 spec:
   project: gitops-demo
   source:
-    repoURL: https://github.com/digitastuces/gitops-demo-manifests.git
+    repoURL: https://github.com/digitastuces/008-cicd-gitops.git
     targetRevision: staging
-    path: overlays/staging
+    path: manifests/overlays/staging
   destination:
     server: https://kubernetes.default.svc
     namespace: staging

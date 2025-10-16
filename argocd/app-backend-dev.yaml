@@ -6,9 +6,9 @@ metadata:
 spec:
   project: gitops-demo
   source:
-    repoURL: https://github.com/digitastuces/gitops-demo-manifests.git
+    repoURL: https://github.com/digitastuces/008-cicd-gitops.git
     targetRevision: main
-    path: overlays/dev
+    path: manifests/overlays/dev
   destination:
     server: https://kubernetes.default.svc
     namespace: dev

@@ -107,6 +107,10 @@ Exécution manuelle :
 # Depuis ton poste local
 docker build -t gitops-demo-backend backend
 docker tag gitops-demo-backend:latest 065967698083.dkr.ecr.eu-west-3.amazonaws.com/gitops-demo-backend:latest
+
+aws sso login --profile formation
+export AWS_PROFILE=formation AWS_REGION=eu-west-3 AWS_SDK_LOAD_CONFIG=1
+
 aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 065967698083.dkr.ecr.eu-west-3.amazonaws.com
 docker push 065967698083.dkr.ecr.eu-west-3.amazonaws.com/gitops-demo-backend:latest
 ```
